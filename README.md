@@ -17,7 +17,3 @@ alias CleanTrash='/bin/rm -rf ~/.Trash/*'
 -  use `CleanTrash` if you want to clean the recycle bin.
 -  use `rm` directly in your terminal to delete the files/folders.
 -  if you want to call this program in your shell script, you need to `source` your script.
-
-
-Jan 14th, 2015
-Mark.Z
