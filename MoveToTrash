@@ -1,68 +1,68 @@
 #!/bin/bash -e
 
 function deleteSingleFile {
-	fileSize=$(stat -c '%s' $1)		
-		
-	if ((fileSize > 10000000)); then   # permanently delete large files
-		fileSizeInMb=$(($fileSize / 1024 / 1024 ))
-		echo "Warning: file "$1" is large ("$fileSizeInMb"Mb). Attempt to \
+  fileSize=$(stat -c '%s' $1)    
+    
+  if ((fileSize > 10000000)); then   # permanently delete large files
+    fileSizeInMb=$(($fileSize / 1024 / 1024 ))
+    echo "Warning: file "$1" is large ("$fileSizeInMb"Mb). Attempt to \
 delete permanently."
-		/bin/rm -i $1 
-	else		
-		fileNameInTrashBin=~/.Trash/$(echo $1 | awk -F "/" -v d="$DATE" \
+    /bin/rm -i $1 
+  else    
+    fileNameInTrashBin=~/.Trash/$(echo $1 | awk -F "/" -v d="$DATE" \
 '{ for(i=1; i<=NF; i++) { if (i==NF) $i=$i".f"d; else $i=$i".d"d }} \
 END{print $0}' OFS="/")
-		
-		# if same file exists in .Trash, rename it
-		if [ -f "$fileNameInTrashBin" ]; then
-			mv $fileNameInTrashBin $fileNameInTrashBin"X"
-		fi
-		
-		mv $1 $fileNameInTrashBin
-	fi
+    
+    # if same file exists in .Trash, rename it
+    if [ -f "$fileNameInTrashBin" ]; then
+      mv $fileNameInTrashBin $fileNameInTrashBin"X"
+    fi
+    
+    mv $1 $fileNameInTrashBin
+  fi
 }
 
 function deleteTree {
-	fileList=($(find $1))
+  fileList=($(find $1))
 
-	for file in ${fileList[@]}; do
-		if [ -f "$file" ] ; then
-			deleteSingleFile $file
-		else
-			folderNameInTrashBin=~/.Trash/$(echo $file | awk -F "/" -v d="$DATE" \
+  for file in ${fileList[@]}; do
+    if [ -f "$file" ] ; then
+      deleteSingleFile $file
+    else
+      folderNameInTrashBin=~/.Trash/$(echo $file | awk -F "/" -v d="$DATE" \
 '{ for(i=1; i<=NF; i++) $i=$i".d"d} END{print $0}' OFS="/")
 
-			if [ ! -d "$folderNameInTrashBin" ]; then
-				mkdir $folderNameInTrashBin
-			fi
-		fi
-	done
+      if [ ! -d "$folderNameInTrashBin" ]; then
+        mkdir $folderNameInTrashBin
+      fi
+    fi
+  done
 }
 
 DATE=$(date +"%m%d%y")
 currDir=$PWD
-		
+    
 while [ ! -z "$1" ]; do
-	if [ ! -d "$1" ] && [ ! -f "$1" ]; then		
-		echo "File/Folder: "$1" does not exist! Will do nothing."
-		shift && continue
-	elif [ "$1" == "./" ] || [ "$1" == "../" ]; then
-		echo "Illegal argument: \""$1"\"! Will do nothing."
-		shift && continue
-	fi
-			
-	if [ $(echo $1 | tail -c 2) == '/' ]; then
-		path=$(echo $1 | sed 's/.$//')
-	else
-		path=$1
-	fi
-	name=$(echo $path | awk -F "/" '{print $NF}')
-	path=$(echo $path | awk -v fs="$name" 'BEGIN{ FS=fs }; {print $1}')
+  if [ ! -d "$1" ] && [ ! -f "$1" ]; then    
+    echo "File/Folder: "$1" does not exist! Will do nothing."
+    shift && continue
+  elif [ "$1" == "./" ] || [ "$1" == "../" ]; then
+    echo "Illegal argument: \""$1"\"! Will do nothing."
+    shift && continue
+  fi
+      
+  if [ $(echo $1 | tail -c 2) == '/' ]; then
+    path=$(echo $1 | sed 's/.$//')
+  else
+    path=$1
+  fi
+  name=$(echo $path | awk -F "/" '{print $NF}')
+  path=$(echo $path | awk -v fs="$name" 'BEGIN{ FS=fs }; {print $1}')
 
-	cd $path"./"
-	deleteTree $name
-	cd $currDir
-	/bin/rm -rf $1
-	
-	shift
+  cd $path"./"
+  deleteTree $name
+  cd $currDir
+  /bin/rm -rf $1
+  
+  shift
 done
