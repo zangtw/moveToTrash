@@ -1,13 +1,13 @@
 #!/bin/bash -e
 
 function deleteSingleFile {
-	if [ "$osname" == 'Linux' ]; then
-		fileSize=$(stat -c '%s' $1)    
-	elif [ "$osname" == 'Darwin' ]; then
-		fileSize=$(stat -f '%z' $1)    
-	else
-		fileSize=0
-	fi
+  if [ "$osname" == 'Linux' ]; then
+    fileSize=$(stat -c '%s' $1)    
+  elif [ "$osname" == 'Darwin' ]; then
+    fileSize=$(stat -f '%z' $1)    
+  else
+    fileSize=0
+  fi
     
   if ((fileSize > 10000000)); then   # permanently delete large files
     fileSizeInMb=$(($fileSize / 1024 / 1024 ))
