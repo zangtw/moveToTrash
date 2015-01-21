@@ -15,7 +15,7 @@ function deleteSingleFile {
 delete permanently."
     /bin/rm -i $1 
   else    
-    fileNameInTrashBin=~/.Trash/$(echo $1 | awk -F "/" -v d="$DATE" \
+    fileNameInTrashBin=~/.Trash/$(echo $1 | gawk -F "/" -v d="$DATE" \
 '{ for(i=1; i<=NF; i++) { if (i==NF) $i=$i".f"d; else $i=$i".d"d }} \
 END{print $0}' OFS="/")
     
@@ -35,7 +35,7 @@ function deleteTree {
     if [ -f "$file" ] ; then
       deleteSingleFile $file
     else
-      folderNameInTrashBin=~/.Trash/$(echo $file | awk -F "/" -v d="$DATE" \
+      folderNameInTrashBin=~/.Trash/$(echo $file | gawk -F "/" -v d="$DATE" \
 '{ for(i=1; i<=NF; i++) $i=$i".d"d} END{print $0}' OFS="/")
 
       if [ ! -d "$folderNameInTrashBin" ]; then
@@ -63,8 +63,8 @@ while [ ! -z "$1" ]; do
   else
     path=$1
   fi
-  name=$(echo $path | awk -F "/" '{print $NF}')
-  path=$(echo $path | awk -v fs="$name" 'BEGIN{ FS=fs }; {print $1}')
+  name=$(echo $path | gawk -F "/" '{print $NF}')
+  path=$(echo $path | gawk -v fs="$name" 'BEGIN{ FS=fs }; {print $1}')
 
   cd $path"./"
   deleteTree $name
