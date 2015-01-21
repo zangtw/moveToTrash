@@ -1,7 +1,13 @@
 #!/bin/bash -e
 
 function deleteSingleFile {
-  fileSize=$(stat -c '%s' $1)    
+	if [ "$osname" == 'Linux' ]; then
+		fileSize=$(stat -c '%s' $1)    
+	elif [ "$osname" == 'Darwin' ]; then
+		fileSize=$(stat -f '%z' $1)    
+	else
+		fileSize=0
+	fi
     
   if ((fileSize > 10000000)); then   # permanently delete large files
     fileSizeInMb=$(($fileSize / 1024 / 1024 ))
@@ -41,6 +47,7 @@ function deleteTree {
 
 DATE=$(date +"%m%d%y")
 currDir=$PWD
+osname=$(uname)
     
 while [ ! -z "$1" ]; do
   if [ ! -d "$1" ] && [ ! -f "$1" ]; then    
