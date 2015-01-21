@@ -5,8 +5,9 @@ A simple script that can work as recycle bin on Unix/Linux.
 #### Installation step
 
 1. put this file under whatever folder in your `$PATH`.
-2. create a folder named `~/.Trash`
-3. add these aliases in you `~/.bashrc`:
+2. add execution permissions to this file by typing `chmod +x MoveToTrash`.
+3. create a folder named `~/.Trash`
+4. add these aliases in you `~/.bashrc`:
 
 ```bash
 alias rm='MoveToTrash'
